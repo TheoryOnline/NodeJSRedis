@@ -1,7 +1,6 @@
 // EXAMPLE: js_home_json
 // REMOVE_START
 import assert from 'assert';
-import { Console } from 'console';
 // REMOVE_END
 // STEP_START import
 import {
