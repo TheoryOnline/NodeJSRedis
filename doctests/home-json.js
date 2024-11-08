@@ -16,7 +16,10 @@ const client = await createClient();
 await client.connect();
 // STEP_END
 // REMOVE_START
-await client.ft.dropIndex('idx:users', { DD: true });
+try {
+    await client.ft.dropIndex('idx:users', { DD: true });
+} catch{}
+
 await client.del('user:1', 'user:2', 'user:3');
 // REMOVE_END
 
