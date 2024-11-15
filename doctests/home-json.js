@@ -24,26 +24,26 @@ await client.del('user:1', 'user:2', 'user:3');
 // REMOVE_END
 
 // STEP_START create_data
-var user1 = {
-    name: "Paul John",
-    email: "paul.john@example.com",
+const user1 = {
+    name: 'Paul John',
+    email: 'paul.john@example.com',
     age: 42,
-    city: "London"
-}
+    city: 'London'
+};
 
-var user2 = {
-    name: "Eden Zamir",
-    email: "eden.zamir@example.com",
+const user2 = {
+    name: 'Eden Zamir',
+    email: 'eden.zamir@example.com',
     age: 29,
-    city: "Tel Aviv"
-}
+    city: 'Tel Aviv'
+};
 
-var user3 = {
-    name: "Paul Zamir",
-    email: "paul.zamir@example.com",
+const user3 = {
+    name: 'Paul Zamir',
+    email: 'paul.zamir@example.com',
     age: 35,
-    city: "Tel Aviv"
-}
+    city: 'Tel Aviv'
+};
 // STEP_END
 
 // STEP_START make_index
@@ -52,7 +52,7 @@ await client.ft.create('idx:users', {
         type: SchemaFieldTypes.TEXT,
         AS: 'name'
     },
-    "$.city": {
+    '$.city': {
         type: SchemaFieldTypes.TEXT,
         AS: 'city'
     },
@@ -67,18 +67,20 @@ await client.ft.create('idx:users', {
 // STEP_END
 
 // STEP_START add_data
-var user1Added = await client.json.set('user:1', '$', user1);
-var user2Added = await client.json.set('user:2', '$', user2);
-var user3Added = await client.json.set('user:3', '$', user3);
+const [user1Reply, user2Reply, user3Reply] = await Promise.all([
+    client.json.set('user:1', '$', user1),
+    client.json.set('user:2', '$', user2),
+    client.json.set('user:3', '$', user3)
+]);
 // STEP_END
 // REMOVE_START
-assert.equal('OK', user1Added);
-assert.equal('OK', user2Added);
-assert.equal('OK', user3Added);
+assert.equal('OK', user1Reply);
+assert.equal('OK', user2Reply);
+assert.equal('OK', user3Reply);
 // REMOVE_END
 
 // STEP_START query1
-var findPaulResult = await client.ft.search('idx:users', 'Paul @age:[30 40]');
+let findPaulResult = await client.ft.search('idx:users', 'Paul @age:[30 40]');
 
 console.log(findPaulResult.total); // >>> 1
 
@@ -90,14 +92,14 @@ findPaulResult.documents.forEach(doc => {
 // REMOVE_START
 assert.strictEqual(1, findPaulResult.total);
 
-var paulDoc = findPaulResult.documents[0];
+let paulDoc = findPaulResult.documents[0];
 
 assert.equal('user:3', paulDoc.id);
 // REMOVE_END
 
 // STEP_START query2
-var citiesResult = await client.ft.search('idx:users', '*',{
-    RETURN: "city"
+let citiesResult = await client.ft.search('idx:users', '*',{
+    RETURN: 'city'
 });
 
 console.log(citiesResult.total); // >>> 3
@@ -119,7 +121,7 @@ assert.equal('user:3', citiesResult.documents[2].id);
 // REMOVE_END
 
 // STEP_START query3
-var aggResult = await client.ft.aggregate('idx:users', '*', {
+let aggResult = await client.ft.aggregate('idx:users', '*', {
     STEPS: [{
         type: AggregateSteps.GROUPBY,
         properties: '@city',
